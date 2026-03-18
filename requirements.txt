@@ -1,6 +1,8 @@
 streamlit>=1.36.0
 transformers
 torch
+deep-translator==1.11.4
+langdetect
 shap
 scikit-learn
 pandas
@@ -8,5 +10,3 @@ numpy
 matplotlib
 altair==4.2.2
 tqdm
-googletrans==4.0.0rc1
-langdetect

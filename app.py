@@ -2,7 +2,7 @@ import re
 import streamlit as st
 import torch
 from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification
-from googletrans import Translator as GoogleTranslator
+from deep_translator import GoogleTranslator
 from langdetect import detect as detect_language
 
 # ----------------------------------
@@ -132,36 +132,33 @@ intensity_advice_map = {
 }
 
 # ----------------------------------
-# Intensity color config (green → yellow → red)
+# Intensity color config (green to yellow to red)
 # ----------------------------------
 
 INTENSITY_LEVELS = [
-    {"value": 1, "label": "Very Low",    "color": "#2ecc71", "text": "🟢 Very Low — Feeling mostly okay"},
-    {"value": 2, "label": "Low",         "color": "#a8d832", "text": "🟡 Low — Slight discomfort"},
-    {"value": 3, "label": "Moderate",    "color": "#f1c40f", "text": "🟠 Moderate — Noticeably affected"},
-    {"value": 4, "label": "Strong",      "color": "#e67e22", "text": "🔴 Strong — Significantly affected"},
-    {"value": 5, "label": "Overwhelming","color": "#e74c3c", "text": "🔴 Overwhelming — Strongly affected"},
+    {"value": 1, "label": "Very Low",     "color": "#2ecc71", "text": "Very Low — Feeling mostly okay"},
+    {"value": 2, "label": "Low",          "color": "#a8d832", "text": "Low — Slight discomfort"},
+    {"value": 3, "label": "Moderate",     "color": "#f1c40f", "text": "Moderate — Noticeably affected"},
+    {"value": 4, "label": "Strong",       "color": "#e67e22", "text": "Strong — Significantly affected"},
+    {"value": 5, "label": "Overwhelming", "color": "#e74c3c", "text": "Overwhelming — Strongly affected"},
 ]
 
 # ----------------------------------
-# Helpers
+# Translation Helpers
 # ----------------------------------
-
-_translator = GoogleTranslator()
 
 def safe_translate(text, src, tgt):
     try:
         if not text.strip():
             return text
-        result = _translator.translate(text, src=src if src != "auto" else None, dest=tgt)
-        return result.text
+        return GoogleTranslator(source=src, target=tgt).translate(text)
     except Exception:
         return text
 
 def get_user_language(text):
     """
     Detect language with confidence check.
-    Short texts (under 5 words) always return 'en' — langdetect is unreliable on short inputs.
+    Short texts under 5 words always return 'en' — langdetect is unreliable on short inputs.
     Only marks as foreign if confidence >= 0.90.
     """
     try:
@@ -179,11 +176,11 @@ def get_user_language(text):
     except Exception:
         return "en"
 
-def bilingual_block(translated_text, english_text, lang_name="Detected Language"):
-    """Show translated language first, English below — only if language is not English."""
+def bilingual_block(translated_text, english_text, lang_label="Detected Language"):
+    """Show translated language first, English below."""
     st.markdown(f"""
     <div class="bilingual-box lang-primary">
-        <div class="lang-tag">{lang_name}</div>
+        <div class="lang-tag">{lang_label}</div>
         {translated_text}
     </div>
     <div class="bilingual-box lang-english">
@@ -191,17 +188,6 @@ def bilingual_block(translated_text, english_text, lang_name="Detected Language"
         {english_text}
     </div>
     """, unsafe_allow_html=True)
-
-def english_only_block(text, style="info"):
-    """Used when input is already English."""
-    if style == "error":
-        st.error(text)
-    elif style == "warning":
-        st.warning(text)
-    elif style == "success":
-        st.success(text)
-    else:
-        st.info(text)
 
 # ----------------------------------
 # Crisis Detection
@@ -222,22 +208,12 @@ def detect_crisis(text):
 # ----------------------------------
 
 # STRONG depression keywords — always override to Depression (label 3)
-# Only use words that unambiguously mean clinical/severe sadness
 STRONG_DEPRESSION_KEYWORDS = [
     "depressed", "depression", "worthless", "hopeless",
     "miserable", "numb", "heartbroken", "devastated",
     "grief", "grieving", "lost hope", "no hope",
     "cant go on", "no point", "feel nothing",
     "dead inside", "broken inside", "empty inside"
-]
-
-# MILD emotion words — let the MODEL decide for these
-# These are everyday words that don't always mean Depression
-# The slider has NO effect on these — model output is used as-is
-MILD_WORDS_LET_MODEL_DECIDE = [
-    "sad", "sadness", "unhappy", "lonely", "alone",
-    "crying", "guilty", "guilt", "regret", "ashamed",
-    "broken", "heartache", "upset", "down", "blue"
 ]
 
 # Anxiety / Stress keywords — always override to label 4
@@ -249,8 +225,7 @@ ANXIETY_KEYWORDS = [
 ]
 
 # Seeking support keywords — always override to label 2
-# Also includes mild sad words — these should at minimum be "Seeking Support",
-# never "Positive/Recovery" which is what the model wrongly outputs for them
+# Mild sad words go here so the model never wrongly returns Positive/Recovery
 SUPPORT_KEYWORDS = [
     "need help", "need support", "struggling",
     "can't cope", "dont know what to do", "confused",
@@ -261,31 +236,28 @@ SUPPORT_KEYWORDS = [
 
 def keyword_override(text):
     """
-    Slider has NO role here. Only strong, unambiguous words trigger an override.
-    Mild words like 'sad', 'lonely' are intentionally left for the model to decide.
+    Slider has NO role here.
+    Strong unambiguous words trigger an override.
+    Mild words like 'sad' floor at Seeking Support (label 2) to prevent wrong Positive output.
     """
     t = text.lower()
 
-    # Strong depression words — always Depression
     for word in STRONG_DEPRESSION_KEYWORDS:
         if re.search(r'\b' + re.escape(word) + r'\b', t):
             return 3
 
-    # Anxiety keywords
     for word in ANXIETY_KEYWORDS:
         if re.search(r'\b' + re.escape(word) + r'\b', t):
             return 4
 
-    # Support keywords
     for word in SUPPORT_KEYWORDS:
         if re.search(r'\b' + re.escape(word) + r'\b', t):
             return 2
 
-    # Mild words → return None so the model decides
     return None
 
 # ----------------------------------
-# LANGUAGE NAME MAP (iso → readable)
+# Language Name Map
 # ----------------------------------
 
 LANG_NAMES = {
@@ -302,7 +274,7 @@ def lang_name(code):
     return LANG_NAMES.get(code, code.upper())
 
 # ==================================
-# UI STARTS HERE
+# UI
 # ==================================
 
 st.title("🧠 AI Mental Health Companion")
@@ -338,16 +310,17 @@ intensity_value = st.slider(
 
 if st.button("Analyze Emotion") and user_input.strip():
 
-    # Show colored intensity display box only after clicking
+    # Show intensity label and colored box after clicking
     st.markdown("""
 <div class="slider-labels">
-    <span>🟢 Very Low</span>
-    <span>🟡 Low</span>
-    <span>🟠 Moderate</span>
-    <span>🔴 Strong</span>
-    <span>🔴 Overwhelming</span>
+    <span>Very Low</span>
+    <span>Low</span>
+    <span>Moderate</span>
+    <span>Strong</span>
+    <span>Overwhelming</span>
 </div>
 """, unsafe_allow_html=True)
+
     level = INTENSITY_LEVELS[intensity_value - 1]
     st.markdown(
         f'<div class="intensity-display" style="background-color:{level["color"]}22; '
@@ -408,15 +381,17 @@ if st.button("Analyze Emotion") and user_input.strip():
         prediction = torch.argmax(probs, dim=1).item()
         confidence = probs[0][prediction].item()
 
-    # NOTE: Slider does NOT change the emotion prediction.
+    # Slider does NOT change the emotion prediction.
     # It only affects the advice text shown below.
 
     label_en   = label_map[prediction]
     message_en = response_map[prediction]
 
     # ---- Detected Emotional Signal ----
-    st.subheader("Detected Emotional Signal" if not is_foreign else
-                 safe_translate("Detected Emotional Signal", "en", user_lang) + " / Detected Emotional Signal")
+    st.subheader(
+        "Detected Emotional Signal" if not is_foreign else
+        safe_translate("Detected Emotional Signal", "en", user_lang) + " / Detected Emotional Signal"
+    )
 
     if is_foreign:
         label_translated = safe_translate(label_en, "en", user_lang)
@@ -428,14 +403,18 @@ if st.button("Analyze Emotion") and user_input.strip():
         else:                 st.success(label_en)
 
     # ---- AI Confidence ----
-    st.subheader("AI Confidence" if not is_foreign else
-                 safe_translate("AI Confidence", "en", user_lang) + " / AI Confidence")
+    st.subheader(
+        "AI Confidence" if not is_foreign else
+        safe_translate("AI Confidence", "en", user_lang) + " / AI Confidence"
+    )
     st.progress(float(confidence))
     st.write(round(confidence, 3))
 
     # ---- Therapist Insight ----
-    st.subheader("AI Therapist Insight" if not is_foreign else
-                 safe_translate("AI Therapist Insight", "en", user_lang) + " / AI Therapist Insight")
+    st.subheader(
+        "AI Therapist Insight" if not is_foreign else
+        safe_translate("AI Therapist Insight", "en", user_lang) + " / AI Therapist Insight"
+    )
 
     if is_foreign:
         message_translated = safe_translate(message_en, "en", user_lang)
