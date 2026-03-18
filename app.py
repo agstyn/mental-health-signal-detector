@@ -51,6 +51,22 @@ user_input = st.text_area(
     placeholder="Type how you are feeling..."
 )
 
+positive_words = [
+    "happy", "good", "great", "relaxed", "excited",
+    "amazing", "awesome", "fantastic", "glad"
+]
+
+if any(word in text.lower() for word in positive_words):
+    st.subheader("Detected Mental Health Signal")
+    st.success("Positive / Stable Mood")
+
+    st.write("Confidence:", "High")
+
+    st.subheader("Supportive Suggestion")
+    st.info("It's great that you're feeling positive. Keep maintaining healthy habits and self-care.")
+
+    st.stop()
+    
 # ----------------------------
 # Prediction logic
 # ----------------------------
