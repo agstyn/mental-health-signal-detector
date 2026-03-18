@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+.ipynb_checkpoints/
+dist/
+
+*.pyc
+*.pyo
+
+models/results/
+models/distilbert_mental_health/model.safetensors
