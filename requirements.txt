@@ -8,3 +8,5 @@ numpy
 matplotlib
 altair==4.2.2
 tqdm
+googletrans==4.0.0rc1
+langdetect

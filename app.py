@@ -2,7 +2,7 @@ import re
 import streamlit as st
 import torch
 from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification
-from deep_translator import GoogleTranslator
+from googletrans import Translator as GoogleTranslator
 from langdetect import detect as detect_language
 
 # ----------------------------------
@@ -147,11 +147,14 @@ INTENSITY_LEVELS = [
 # Helpers
 # ----------------------------------
 
+_translator = GoogleTranslator()
+
 def safe_translate(text, src, tgt):
     try:
-        if src == tgt or not text.strip():
+        if not text.strip():
             return text
-        return GoogleTranslator(source=src, target=tgt).translate(text)
+        result = _translator.translate(text, src=src if src != "auto" else None, dest=tgt)
+        return result.text
     except Exception:
         return text
 
