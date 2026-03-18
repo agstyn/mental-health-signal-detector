@@ -1,4 +1,4 @@
-# 🧠 Mental Health Signal Detector
+#  Mental Health Signal Detector
 
 AI-powered NLP model that detects **mental health signals from text** using a fine-tuned **DistilBERT transformer model**.
 
@@ -6,7 +6,7 @@ The project also includes **Explainable AI (SHAP)** to understand why the model 
 
 ---
 
-# 🚀 Features
+#  Features
 
 * Transformer-based mental health text classification
 * Fine-tuned **DistilBERT model**
@@ -17,7 +17,7 @@ The project also includes **Explainable AI (SHAP)** to understand why the model 
 
 ---
 
-# 🧠 Model
+#  Model
 
 The model is trained on mental health related text data and predicts the mental state signal.
 
@@ -31,7 +31,7 @@ Example signals detected:
 
 ---
 
-# 🖥 Web Application
+#  Web Application
 
 The Streamlit interface allows users to input text and receive:
 
@@ -57,7 +57,7 @@ Suggested message:
 
 ---
 
-# 🔍 Explainable AI
+#  Explainable AI
 
 The project uses **SHAP (Shapley Additive Explanations)** to visualize:
 
@@ -68,7 +68,7 @@ This improves transparency and trust in the model.
 
 ---
 
-# 📁 Project Structure
+#  Project Structure
 
 ```
 mental-health-signal-detector
@@ -92,7 +92,7 @@ mental-health-signal-detector
 
 ---
 
-# ⚙️ Installation
+#  Installation
 
 Clone the repository:
 
@@ -122,7 +122,7 @@ pip install -r requirements.txt
 
 ---
 
-# ▶️ Run the App
+#  Run the App
 
 ```
 streamlit run app.py
@@ -130,7 +130,7 @@ streamlit run app.py
 
 ---
 
-# 🧰 Tech Stack
+#  Tech Stack
 
 * Python
 * PyTorch
@@ -143,7 +143,7 @@ streamlit run app.py
 
 ---
 
-# 🎯 Future Improvements
+#  Future Improvements
 
 * Deploy on HuggingFace Spaces
 * Add mental health resource suggestions
@@ -152,7 +152,7 @@ streamlit run app.py
 
 ---
 
-# 👨‍💻 Author
+#  Author
 
 Agasthyan S
 Data Science Student
