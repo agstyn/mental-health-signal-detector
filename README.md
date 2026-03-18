@@ -56,6 +56,15 @@ Suggested message:
 > Taking a short break, talking with someone you trust, or seeking support can help.
 
 ---
+## Application Demo
+
+### User Input Interface
+![Input Interface](app_demo2.png)
+
+### Model Prediction Output
+![Prediction Output](app_demo.png)
+
+---
 
 #  Explainable AI
 
