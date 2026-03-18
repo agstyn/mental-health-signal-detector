@@ -6,11 +6,10 @@ from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassific
 # Load tokenizer and model
 # ----------------------------
 
-MODEL_PATH = "distilbert-base-uncased"
+MODEL_PATH = "agstyn/mental-health-distilbert"
 
 tokenizer = DistilBertTokenizerFast.from_pretrained(MODEL_PATH)
-model = DistilBertForSequenceClassification.from_pretrained(MODEL_PATH, num_labels=4)
-
+model = DistilBertForSequenceClassification.from_pretrained(MODEL_PATH)
 model.eval()
 
 # ----------------------------
