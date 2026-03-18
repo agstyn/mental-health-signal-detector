@@ -25,7 +25,11 @@ st.markdown("""
 /* Hide default slider number label and tick marks */
 div[data-testid="stSlider"] label { display: none; }
 div[data-testid="stSlider"] [data-testid="stTickBar"] { display: none; }
-div[data-testid="stSlider"] span { display: none; }
+div[data-testid="stSlider"] span { display: none !important; }
+div[data-testid="stSlider"] p { display: none !important; }
+div[data-testid="stSlider"] [data-testid="stSliderThumbValue"] { display: none !important; }
+div[data-testid="stSlider"] [data-testid="stSliderTickBarMin"] { display: none !important; }
+div[data-testid="stSlider"] [data-testid="stSliderTickBarMax"] { display: none !important; }
 
 /* Gradient track on the slider */
 div[data-testid="stSlider"] > div > div > div > div {
@@ -231,7 +235,11 @@ SUPPORT_KEYWORDS = [
     "can't cope", "dont know what to do", "confused",
     "sad", "sadness", "unhappy", "upset", "down",
     "lonely", "alone", "crying", "heartache",
-    "regret", "guilty", "guilt", "ashamed", "broken"
+    "regret", "guilty", "guilt", "ashamed", "broken",
+    "exhausted", "drained", "tired", "burnout", "burnt out",
+    "burned out", "worn out", "empty", "lost", "helpless",
+    "unmotivated", "demotivated", "hopeless feeling", "low",
+    "not okay", "not fine", "not good", "bad day", "rough day"
 ]
 
 def keyword_override(text):
