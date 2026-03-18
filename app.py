@@ -56,7 +56,7 @@ positive_words = [
     "amazing", "awesome", "fantastic", "glad"
 ]
 
-if any(word in text.lower() for word in positive_words):
+if any(word in user_input.lower() for word in positive_words):
     st.subheader("Detected Mental Health Signal")
     st.success("Positive / Stable Mood")
 
@@ -66,7 +66,7 @@ if any(word in text.lower() for word in positive_words):
     st.info("It's great that you're feeling positive. Keep maintaining healthy habits and self-care.")
 
     st.stop()
-    
+
 # ----------------------------
 # Prediction logic
 # ----------------------------
